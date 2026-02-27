@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include <openssl/crypto.h>
 #include <openssl/evp.h>
 #include <openssl/engine.h>
 #include <openssl/rand.h>

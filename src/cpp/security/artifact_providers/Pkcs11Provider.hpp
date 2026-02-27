@@ -22,6 +22,7 @@
 #include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
+#include <openssl/ui.h>
 
 #include <rtps/security/exceptions/SecurityException.h>
 

@@ -1,6 +1,20 @@
-load("@rules_cc//cc:defs.bzl", "cc_library")
+# Copyright 2026 Open Source Robotics Foundation, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:private"])
 
 licenses(["notice"])
 
@@ -14,15 +28,11 @@ cc_library(
             "src/cpp/**/*.cpp",
             "src/cpp/**/*.cxx",
         ],
-        exclude = [
-            # Security sources are conditional on HAVE_SECURITY in CMake.
-            "src/cpp/rtps/security/**/*.cpp",
-            "src/cpp/security/**/*.cpp",
-            "src/cpp/rtps/builtin/discovery/participant/DS/PDPSecurityInitiatorListener.cpp",
-        ],
     ),
     hdrs = glob([
         "include/**/*.hpp",
+        "thirdparty/asio/asio/include/**/*.hpp",
+        "thirdparty/asio/asio/include/**/*.ipp",
         "thirdparty/boost/include/**/*.h",
         "thirdparty/boost/include/**/*.hpp",
         "thirdparty/boost/include/**/*.ipp",
@@ -30,18 +40,19 @@ cc_library(
     ]) + [
         "thirdparty/filewatch/FileWatch.hpp",
     ],
-    # Workaround for GCC 15 / binutils 2.45 bug where .sframe relocations
-    # reference symbols in discarded COMDAT sections, causing linker errors.
     cxxopts = [
+        "-Wno-deprecated-builtins",
         "-Wno-deprecated-declarations",
+        "-Wno-deprecated-literal-operator",
+        "-Wno-nonnull",
+        "-Wno-thread-safety-analysis",
         "-Wno-unknown-pragmas",
-        "-Wno-unused-variable",
-        "-Wno-sign-compare",
     ],
     includes = [
         "include",
         "src/cpp",
         "src/cpp/utils",
+        "thirdparty/asio/asio/include",
         "thirdparty/boost/include",
         "thirdparty/filewatch",
         "thirdparty/taocpp-pegtl",
@@ -49,14 +60,13 @@ cc_library(
         "thirdparty/taocpp-pegtl/pegtl/contrib",
         "thirdparty/taocpp-pegtl/pegtl/internal",
     ],
-    linkopts = ["-lrt"],
     local_defines = [
         "SQLITE3_SUPPORT=1",
         "TLS_FOUND=1",
-        "FASTDDS_STATISTICS=1",
+        "HAVE_SECURITY=1",
     ],
+    visibility = ["//visibility:public"],
     deps = [
-        "@asio",
         "@fastcdr",
         "@foonathan_memory",
         "@nlohmann_json//:singleheader-json",
