@@ -19,12 +19,6 @@ cc_library(
             "src/cpp/rtps/security/**/*.cpp",
             "src/cpp/security/**/*.cpp",
             "src/cpp/rtps/builtin/discovery/participant/DS/PDPSecurityInitiatorListener.cpp",
-            # Statistics sources are conditional on FASTDDS_STATISTICS in CMake.
-            "src/cpp/statistics/rtps/**/*.cpp",
-            "src/cpp/statistics/fastdds/domain/DomainParticipantImpl.cpp",
-            "src/cpp/statistics/fastdds/domain/DomainParticipantStatisticsListener.cpp",
-            "src/cpp/statistics/types/**/*.cpp",
-            "src/cpp/statistics/types/**/*.cxx",
         ],
     ),
     hdrs = glob([
@@ -55,9 +49,11 @@ cc_library(
         "thirdparty/taocpp-pegtl/pegtl/contrib",
         "thirdparty/taocpp-pegtl/pegtl/internal",
     ],
+    linkopts = ["-lrt"],
     local_defines = [
         "SQLITE3_SUPPORT=1",
         "TLS_FOUND=1",
+        "FASTDDS_STATISTICS=1",
     ],
     deps = [
         "@asio",
